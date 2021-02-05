@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+option go_package = "proto";
+
+service wechat {
+  rpc get_auth_access_token(get_auth_access_token_req) returns (get_auth_access_token_res) {}
+  rpc get_user_info(get_user_info_req) returns (get_user_info_res) {}
+  rpc get_access_token(get_access_token_req) returns (get_access_token_res) {}
+  rpc get_ticket(get_ticket_req) returns (get_ticket_res) {}
+  rpc get_jssdk(get_jssdk_req) returns (get_jssdk_res) {}
+  rpc make_short_url(make_short_url_req) returns (make_short_url_res) {}
+  rpc send_template(send_template_req) returns (send_template_res) {}
+
+}
+
+enum account {
+  momo_za_huo_pu = 0;
+}
+
+message r{
+  int64 code = 1;
+  string msg = 2;
+}
+
+message get_auth_access_token_req{
+  account account = 1;
+  string code = 2;
+}
+
+message get_auth_access_token_res{
+  r res = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  string openid = 4;
+  string scope = 5;
+}
+
+message get_user_info_req{
+  string auth_access_token = 1;
+  string openid = 2;
+}
+
+message get_user_info_res{
+  r res = 1;
+  string openid = 2;
+  string nickname = 3;
+  string headimgurl = 4;
+}
+
+message get_access_token_req{
+  account account = 1;
+}
+
+message get_access_token_res{
+  r res = 1;
+  string access_token = 2;
+}
+
+message get_ticket_req{
+  account account = 1;
+}
+
+message get_ticket_res{
+  r res = 1;
+  string ticket = 2;
+}
+
+message get_jssdk_req{
+  account account = 1;
+  string url = 2;
+}
+
+message get_jssdk_res{
+  r res = 1;
+  string appid = 2;
+  string noncestr = 3;
+  string timestamp = 4;
+  string signature = 5;
+}
+
+message make_short_url_req{
+  account account = 1;
+  string url = 2;
+}
+
+message make_short_url_res{
+  r res = 1;
+  string short_url = 2;
+}
+
+message template{
+  string touser = 1;
+  string template_id = 2;
+  string url = 3;
+  map<string, template_item> data = 4;
+}
+
+message template_item{
+  string value = 1;
+  string color = 2;
+}
+
+message send_template_req{
+  account account = 1;
+  template template = 2;
+}
+
+message send_template_res{
+  r res = 1;
+}
+
+
+
+//protoc -I . --go_out=plugins=grpc:. api/proto/proto.proto
