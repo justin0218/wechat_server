@@ -1,4 +1,3 @@
-cd /www/bin/server/wechat_server
 
 echo 更新代码
 
