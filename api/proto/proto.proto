@@ -17,6 +17,10 @@ enum account {
   momo_za_huo_pu = 0;
 }
 
+enum template_define {
+  bill_notice = 0;
+}
+
 message r{
   int64 code = 1;
   string msg = 2;
@@ -102,7 +106,8 @@ message template_item{
 
 message send_template_req{
   account account = 1;
-  template template = 2;
+  template_define template_define = 2;
+  template template = 3;
 }
 
 message send_template_res{

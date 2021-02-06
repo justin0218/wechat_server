@@ -4,7 +4,17 @@ import (
 	"context"
 	"wechat_server/api/proto"
 	"wechat_server/pkg/wechat"
+	"wechat_server/store"
 )
+
+func getTemplate(t proto.TemplateDefine) string {
+	conf := new(store.Config)
+	switch t {
+	case proto.TemplateDefine_bill_notice:
+		return conf.Get().MomoZaHuoPuWechat.BillNoticeTemplate
+	}
+	return ""
+}
 
 func (s *WechatSvr) SendTemplate(ctx context.Context, req *proto.SendTemplateReq) (ret *proto.SendTemplateRes, err error) {
 	ret = new(proto.SendTemplateRes)
@@ -21,6 +31,7 @@ func (s *WechatSvr) SendTemplate(ctx context.Context, req *proto.SendTemplateReq
 		ret.Res = cret
 		return
 	}
+	req.Template.TemplateId = getTemplate(req.TemplateDefine)
 	e = wechat.SendTemplate(req.Template, accessToken.AccessToken)
 	if e != nil {
 		cret.Msg = e.Error()
