@@ -18,27 +18,16 @@ func getTemplate(t proto.TemplateDefine) string {
 
 func (s *WechatSvr) SendTemplate(ctx context.Context, req *proto.SendTemplateReq) (ret *proto.SendTemplateRes, err error) {
 	ret = new(proto.SendTemplateRes)
-	cret := &proto.R{Code: 600}
-	ret.Res = cret
 	accessToken, e := s.GetAccessToken(ctx, &proto.GetAccessTokenReq{Account: req.Account})
 	if e != nil {
-		cret.Msg = e.Error()
-		ret.Res = cret
-		return
-	}
-	if accessToken.Res.Code != 200 {
-		cret.Msg = accessToken.Res.Msg
-		ret.Res = cret
+		err = e
 		return
 	}
 	req.Template.TemplateId = getTemplate(req.TemplateDefine)
 	e = wechat.SendTemplate(req.Template, accessToken.AccessToken)
 	if e != nil {
-		cret.Msg = e.Error()
-		ret.Res = cret
+		err = e
 		return
 	}
-	cret.Code = 200
-	ret.Res = cret
 	return
 }
