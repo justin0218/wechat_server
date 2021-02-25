@@ -48,7 +48,7 @@ type Pay struct {
 	TradeType      string `xml:"trade_type"`
 }
 
-func getWxPaySign(req interface{}) string {
+func getWxPaySign(req interface{}, mchApiKey string) string {
 	objT := reflect.TypeOf(req)
 	objV := reflect.ValueOf(req)
 	keyArr := make([]string, 0)
@@ -68,15 +68,15 @@ func getWxPaySign(req interface{}) string {
 			urlValues = append(urlValues, fmt.Sprintf("%s=%v", val, valMap[val]))
 		}
 	}
-	body := strings.Join(urlValues, "&") + "&key=" + MchApiKey
+	body := strings.Join(urlValues, "&") + "&key=" + mchApiKey
 	has := md5.Sum([]byte(body))
 	md5str := fmt.Sprintf("%x", has)
 	return strings.ToUpper(md5str)
 }
 
-func DoPay(openid string, outTradeNo string, body string, spbillCreateIp string, totalFee int, notifyUrl string, tradeType string) (ret PayRes, req Pay, err error) {
-	req.Appid = APPID
-	req.MchId = MchID
+func DoPay(appid, mchId, mchIdKey, openid string, outTradeNo string, body string, spbillCreateIp string, totalFee int, notifyUrl string, tradeType string) (ret PayRes, req Pay, err error) {
+	req.Appid = appid
+	req.MchId = mchId
 	req.Openid = openid
 	req.NonceStr = tool.RandomStr(16)
 	req.Body = body
@@ -85,7 +85,7 @@ func DoPay(openid string, outTradeNo string, body string, spbillCreateIp string,
 	req.SpbillCreateIp = spbillCreateIp
 	req.NotifyUrl = notifyUrl
 	req.TradeType = tradeType
-	req.Sign = getWxPaySign(req)
+	req.Sign = getWxPaySign(req, mchIdKey)
 	postData, e := xml.Marshal(req)
 	if e != nil {
 		err = e
@@ -116,15 +116,15 @@ type JsapiSign struct {
 	PaySign   string `xml:"paySign"`
 }
 
-func GetJsapiSign(pack string) (ret JsapiSign) {
+func GetJsapiSign(pack, appid, mchApiKey string) (ret JsapiSign) {
 	nocestr := tool.RandomStr(8)
 	timestamp := fmt.Sprint(time.Now().Unix())
-	ret.AppId = APPID
+	ret.AppId = appid
 	ret.TimeStamp = timestamp
 	ret.Package = pack
 	ret.NonceStr = nocestr
 	ret.SignType = "MD5"
-	ret.PaySign = getWxPaySign(ret)
+	ret.PaySign = getWxPaySign(ret, mchApiKey)
 	return
 }
 

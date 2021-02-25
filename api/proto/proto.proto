@@ -10,6 +10,7 @@ service wechat {
   rpc get_jssdk(get_jssdk_req) returns (get_jssdk_res) {}
   rpc make_short_url(make_short_url_req) returns (make_short_url_res) {}
   rpc send_template(send_template_req) returns (send_template_res) {}
+  rpc do_pay(do_pay_req) returns (do_pay_res) {}
 }
 
 enum account {
@@ -100,6 +101,24 @@ message send_template_req{
 
 message send_template_res{
 
+}
+
+message do_pay_req{
+  string openid = 1;
+  string order_code = 2;
+  string body = 3;
+  int64 price = 4;
+  string client_ip = 5;
+  string notify_url = 6;
+  string trade_type = 7;
+}
+
+message do_pay_res{
+  string timestamp = 1;
+  string nonce_str = 2;
+  string package = 3;
+  string sign_type = 4;
+  string pay_sign = 5;
 }
 
 
